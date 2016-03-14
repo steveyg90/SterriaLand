@@ -666,21 +666,16 @@ public class WorldMap {
 	            if (worldMap[x][y] instanceof WaterEntity) {
 	                if (  (worldMap[x][y-1] instanceof LavaEntity ) ||  
 	                		(worldMap[x][y-1] instanceof CaveEntity)) {
-	                   WaterEntity w = (WaterEntity) worldMap[x][y];	
 	                   worldMap[x][y] = new CaveEntity(x,y);
 	          	       worldMap[x][y-1] = new WaterEntity(x,y-1);
 	               }
 	               else if  (( worldMap[x-1][y] instanceof LavaEntity) ||
 	            		   (worldMap[x-1][y] instanceof CaveEntity)) {   // air to the left
-	            	   WaterEntity w = (WaterEntity) worldMap[x][y];	
-	     	           worldMap[x][y] = new CaveEntity(x,y);
-	     	           w.x = x-1;
+	                  worldMap[x][y] = new CaveEntity(x,y);
 	     	           worldMap[x-1][y] = new WaterEntity(x-1,y);
 	               }
 	               else if ((worldMap[x+1][y] instanceof LavaEntity) || 
 	            		   (worldMap[x+1][y] instanceof CaveEntity)) {  // air to the right
-	            	   WaterEntity w = (WaterEntity) worldMap[x][y];	
-	     	           w.x = w.x + 1;  
 	            	   worldMap[x][y] = new CaveEntity(x,y);
 	            	   worldMap[x+1][y] = new WaterEntity(x+1,y);
 	               }
@@ -710,12 +705,12 @@ public class WorldMap {
 					if (entity != null) {
 					{
 						batch.setColor((float) entity.lightValue / MAXLIGHT, (float) entity.lightValue / MAXLIGHT, (float) entity.lightValue / MAXLIGHT, 
-								entity instanceof WaterEntity ? 0.8f : 1);
+								1);
 						// We could be fancy here and not draw any blocks that
 						// don't have any colour...
 						// We would need to work out how not to display the
 						// background through though, that's the problem...
-						if( entity.lightValue > 0)
+					//	if( entity.lightValue > 0)
 							worldMap[col][row].draw(batch, region,col,row);
 						//if(worldMap[col][row] instanceof BlankEntity) {
 						//	batch.draw(region[1][0], col << 4, row << 4);
