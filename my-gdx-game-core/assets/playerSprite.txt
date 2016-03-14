@@ -1,0 +1,25 @@
+playerSprite.png
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+0
+  rotate: false
+  xy: 2, 2
+  size: 16, 24
+  orig: 16, 24
+  offset: 0, 0
+  index: -1
+1
+  rotate: false
+  xy: 20, 2
+  size: 16, 24
+  orig: 16, 24
+  offset: 0, 0
+  index: -1
+2
+  rotate: false
+  xy: 38, 2
+  size: 15, 23
+  orig: 15, 23
+  offset: 0, 0
+  index: -1
