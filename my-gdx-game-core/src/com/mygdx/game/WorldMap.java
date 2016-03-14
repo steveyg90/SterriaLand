@@ -664,28 +664,25 @@ public class WorldMap {
 		  for (int y = sy; y <= ey; y++) {
 		     for (int x = sx; x < ex+1; x++) {
 	            if (worldMap[x][y] instanceof WaterEntity) {
-	                if ( /*(y+1 < ey) &&*/ (worldMap[x][y-1] instanceof LavaEntity ) ||  
+	                if (  (worldMap[x][y-1] instanceof LavaEntity ) ||  
 	                		(worldMap[x][y-1] instanceof CaveEntity)) {
 	                   WaterEntity w = (WaterEntity) worldMap[x][y];	
 	                   worldMap[x][y] = new CaveEntity(x,y);
 	          	       worldMap[x][y-1] = new WaterEntity(x,y-1);
-	          	  //     worldMap[x][y-1].lightValue = w.lightValue;
 	               }
-	               else if /*(( x>=0 ) &&*/ (( worldMap[x-1][y] instanceof LavaEntity) ||
+	               else if  (( worldMap[x-1][y] instanceof LavaEntity) ||
 	            		   (worldMap[x-1][y] instanceof CaveEntity)) {   // air to the left
 	            	   WaterEntity w = (WaterEntity) worldMap[x][y];	
 	     	           worldMap[x][y] = new CaveEntity(x,y);
 	     	           w.x = x-1;
 	     	           worldMap[x-1][y] = new WaterEntity(x-1,y);
-	            	//   worldMap[x-1][y].lightValue = w.lightValue;
 	               }
-	               else if (/*(x+1 < ex) && */(worldMap[x+1][y] instanceof LavaEntity) || 
+	               else if ((worldMap[x+1][y] instanceof LavaEntity) || 
 	            		   (worldMap[x+1][y] instanceof CaveEntity)) {  // air to the right
 	            	   WaterEntity w = (WaterEntity) worldMap[x][y];	
 	     	           w.x = w.x + 1;  
 	            	   worldMap[x][y] = new CaveEntity(x,y);
 	            	   worldMap[x+1][y] = new WaterEntity(x+1,y);
-	            //	   worldMap[x+1][y].lightValue = w.lightValue;
 	               }
 	            }
 	         }
