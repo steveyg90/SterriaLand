@@ -24,11 +24,18 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.World;
+import com.mygdx.badguys.BadGuy;
+import com.mygdx.badguys.Pig;
+import com.mygdx.badguys.Sheep;
 import com.mygdx.parallax.ParallaxBackground;
 import com.mygdx.parallax.ParallaxLayer;
 
 public class Sterria extends ApplicationAdapter implements InputProcessor {
 
+	
+	private boolean torch = false;
+	private float torchDir = 0;
+	
 	private int FPS = 0;
 
 	private final int LIGHTCHECKFRAMES = 1;
@@ -36,6 +43,7 @@ public class Sterria extends ApplicationAdapter implements InputProcessor {
 	private World world;
 	RayHandler rayHandler;
 	private PointLight playerOrb;
+	private ConeLight ct;
 	
 	private Sprite lightSprite;
 	private Texture lightTexture;
@@ -87,11 +95,17 @@ public class Sterria extends ApplicationAdapter implements InputProcessor {
 	private Vector3 playerPosition;
 
 	private Player player;
+	
+	private BadGuy pig;
+	private BadGuy sheep;
+	
 
 	@Override
 	public void create() {
 
-		//SoundFx.MainTrack.play();
+		player = new Player("../my-gdx-game-core/assets/sprites.png", 1024 / 2,
+				768 / 2); // our hero!
+		
 		SoundFx.MainTrack.loop();
 
 		world = new World(new Vector2(0, 0), true); // Box2D world, used for
@@ -141,8 +155,12 @@ public class Sterria extends ApplicationAdapter implements InputProcessor {
 		font.setScale(1.0f);
 		font.setColor(Color.WHITE);
 
-		player = new Player("../my-gdx-game-core/assets/sprites.png", 1024 / 2,
-				768 / 2); // our hero!
+		pig = new Pig(515, 350, 0, 2, camera);
+		sheep = new Sheep(4800,19400,4,2, camera); // 4800, 19200
+		
+		pig.load("../my-gdx-game-core/assets/badguys.png", 40, 5, true);
+		sheep.load("../my-gdx-game-core/assets/badguys.png", 40, 5, false);
+		
 
 		// w-2000 h-1000
 		// Position player middle on X and near top of map on Y
@@ -160,6 +178,9 @@ public class Sterria extends ApplicationAdapter implements InputProcessor {
 
 		playerOrb = new PointLight(rayHandler, 50, Color.WHITE, 200,
 				playerPosition.x, playerPosition.y - 20);
+
+		ct = new ConeLight(rayHandler, 8, Color.WHITE, 400, playerPosition.x,
+				playerPosition.y, 0, 30);
 
 		// TORCH commented out for now
 		// ct = new ConeLight(rayHandler, 8, Color.WHITE, 600, playerPosition.x,
@@ -181,6 +202,7 @@ public class Sterria extends ApplicationAdapter implements InputProcessor {
 	@Override
 	public void render() {
 
+		
 		Vector3 poss = new Vector3(camera.position);
 		poss.y -= 8;
 
@@ -189,7 +211,7 @@ public class Sterria extends ApplicationAdapter implements InputProcessor {
 		if (!bLeft && !bRight) // this needs fixing as doesn't happen when
 								// moving right
 		{
-			if (checkCollision(poss)) {
+			if (checkCollision(poss) && !player.jumping ) {
 				camera.position.y -= 2; // scroll map down
 			}
 		}
@@ -205,8 +227,37 @@ public class Sterria extends ApplicationAdapter implements InputProcessor {
 
 		batch.setProjectionMatrix(camera.combined);
 
+		if(this.checkBlockAbove(camera.position))  // can we jump?  If block above, we cannot
+		{
+			if(player.jumping)
+			{
+				player.jump();
+				camera.position.y += 2;
+			} 
+			else
+			{
+				if(Gdx.input.isKeyJustPressed(Input.Keys.UP) && !checkCollision(poss))
+				{
+					player.jump();
+					camera.position.y += 2;
+				}
+			}
+		}	
+		else
+		{
+			player.jumping = false;   // player not jumping now
+		}
+		
 		if (Gdx.input.isKeyJustPressed(Input.Keys.W)) {
 			removeBlock(camera.position, bDown, bLeft, bRight);
+		}
+
+		if (Gdx.input.isKeyPressed(Input.Keys.T)) {
+			// Torch
+			
+			//	new PointLight(rayHandler, 50, Color.RED, 110,
+			//		camera.position.x, camera.position.y);
+			torch = !torch;
 		}
 
 		if (Gdx.input.isKeyPressed(Input.Keys.R)) {
@@ -233,6 +284,7 @@ public class Sterria extends ApplicationAdapter implements InputProcessor {
 			camera.zoom -= 3.0f;
 
 		if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+			torchDir = 180;
 			bRight = false;
 			bDown = false;
 			player.moveLeft(1);
@@ -254,12 +306,13 @@ public class Sterria extends ApplicationAdapter implements InputProcessor {
 		}
 
 		if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-
+			torchDir = 0;
 			bLeft = false;
 			bDown = false;
 			player.moveRight(1);
 			Vector3 po = new Vector3(camera.position);
-			po.y -= 4;// TILEHEIGHT/2;
+			//po.x -=3.0f;
+			//po.y -= 8;// TILEHEIGHT/2;
 
 			if (checkCollision(po)) {
 				camera.position.x += 1; // scroll map right
@@ -322,15 +375,20 @@ public class Sterria extends ApplicationAdapter implements InputProcessor {
 
 		worldMap.moveWater(camX - 20, camY - 50, endX + 20, endY + 50);
 
+		// Render bad guy sprites and move / update / animate etc them
+		sheep.render(batch);
+		sheep.move(0.1f, 1);
+		
+		
 		if(FPS >= LIGHTCHECKFRAMES )
 		{
-			worldMap.updateLights(camX - 20, camY - 50, endX + 20, endY + 50);
+			worldMap.updateLights(camX - 20, camY - 50, endX + 20, endY + 50, torch);
 			FPS = 0;
 		}
 		else
 			FPS++;
 
-
+		
 		batch.end();
 
 		// HUD - Draw hud (in our case some text!)
@@ -340,19 +398,27 @@ public class Sterria extends ApplicationAdapter implements InputProcessor {
 		hudCamera.update();
 
 		batch.begin();
-		/*
-		 * drawCameraPosition(batch, camera.position); String pos =
-		 * String.format("SteRraria V1.0"); font.draw(batch, pos, 10,
-		 * SCREENHEIGHT);
-		 */
+		
+		 drawCameraPosition(batch, camera.position, sheep.getX(), sheep.getY()); 
+		 String pos = String.format("SteRraria V1.0"); 
+		 font.draw(batch, pos, 10, SCREENHEIGHT);
+		 
 		this.drawFps(batch, fps);
 
 		batch.end();
+		
+		// When player has a torch
+		ct.setActive(torch);
+		if(torch) {
+			worldMap.updateTorch( toScreenSpace(camera.position));
+			ct.setPosition(camera.position.x,camera.position.y);
+			ct.setDirection(torchDir);
+		}
 
 		// update spot light around player
 		// ct.setPosition(camera.position.x, camera.position.y + 10);
 
-		playerOrb.setPosition(camera.position.x, camera.position.y);
+//		playerOrb.setPosition(camera.position.x, camera.position.y);
 
 		rayHandler.setCombinedMatrix(camera.combined);
 		rayHandler.updateAndRender();
@@ -360,6 +426,10 @@ public class Sterria extends ApplicationAdapter implements InputProcessor {
 
 		// Draw player after we have drawn the world
 		player.render(0);
+		
+	//	pig.render();		
+	//	sheep.render();
+		
 		
 	}
 
@@ -375,11 +445,11 @@ public class Sterria extends ApplicationAdapter implements InputProcessor {
 					|| entity instanceof WaterEntity)
 
 			{
-				return true;
+				return !true;
 			}
 		} else
 			// entity is null
-			return true;
+			return !true;
 
 		return false;
 	}
@@ -452,17 +522,29 @@ public class Sterria extends ApplicationAdapter implements InputProcessor {
 		int x = Math.round(screenSpace.x);
 		int y = Math.round(screenSpace.y);
 		BlankEntity entity = this.worldMap.getBlock(x, y);
-		if (entity instanceof CaveTopEntity /*
-											 * &&
-											 * entity.toString().equals("CAVETOP"
-											 * )
-											 */)
+		if (entity instanceof CaveTopEntity || entity instanceof CaveLeftEntity || entity instanceof CaveRightEntity )
 			return true;
 		return entity == null /* || entity.toString().equals(".") */
 				|| entity instanceof CaveEntity
 				|| entity instanceof WaterEntity
 				|| entity instanceof LavaEntity;
 
+	}
+	
+	/*
+	 * Checks to see if we have blocks we can pass through above us, useful when player going to perform
+	 * a jump
+	 */
+	private boolean checkBlockAbove(Vector3 position) {
+		Vector3 screenSpace = toScreenSpace(position);
+		int x = Math.round(screenSpace.x);
+		int y = Math.round(screenSpace.y);
+		if( (worldMap.getBlock(x,y+1)==null) || (worldMap.getBlock(x, y+1) instanceof CaveEntity || worldMap.getBlock(x, y+1) instanceof WaterEntity
+				|| worldMap.getBlock(x, y+1) instanceof LavaEntity))
+		{
+			return true;
+		}
+		return false; 
 	}
 
 	// Some helper methods
@@ -473,14 +555,17 @@ public class Sterria extends ApplicationAdapter implements InputProcessor {
 		return v;
 	}
 
-	private void drawCameraPosition(SpriteBatch batch, Vector3 position) {
+	private void drawCameraPosition(SpriteBatch batch, Vector3 position, float x, float y) {
 		Vector3 screenSpace = toScreenSpace(position);
 		String pos = String.format("Player map pos:[X:%1.0f,Y:%1.0f]",
 				screenSpace.x, screenSpace.y);
 		font.draw(batch, pos, SCREENWIDTH / 2, 50);
-		String playerPos = String.format("Player pixel pos:[X:%d, Y:%d]",
-				player.getX(), player.getY());
+		String playerPos = String.format("Camera pos:[X:%.2f, Y:%.2f]",
+				position.x, position.y);
 		font.draw(batch, playerPos, 100, 50);
+		String sheepPos = String.format("Sheep pos:[X:%.2f, Y:%.2f]",
+				x, y);
+		font.draw(batch, sheepPos, 100, 30);
 
 		BlankEntity entity = this.worldMap.getBlock((int) screenSpace.x + 1,
 				(int) screenSpace.y - 1);

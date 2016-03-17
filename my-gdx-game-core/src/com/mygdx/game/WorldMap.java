@@ -6,15 +6,21 @@ import java.util.Random;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-
+import com.badlogic.gdx.math.Vector3;
+import com.mygdx.chunk.*;
 public class WorldMap {
 
 	static final int MAXLIGHTLEVEL = 15;
 	static final int W = 35;
 	static final int H = 25;
 
-	ArrayList<Cave> caves = new ArrayList<Cave>();
+	ArrayList<Cave> caves = new ArrayList<>();
 
+	ArrayList<Chunk> chunkList = new ArrayList<>();
+	
+	private static final int ROCKAMOUNT = 5;     			// maximum types of rocks games has
+	private static final int CHANCEOFADDINGCHUNK = 2;		//  Between 0-5
+	
 	private  int GRASS_MAX = 1400; // to 1400
 	private final int GRASS_START = 1200; // start 1000 down
 	private final int DIRT_START = 500;   // 500 down to 1000 (Caves will be generated in this part)
@@ -81,7 +87,7 @@ public class WorldMap {
 	 * Go through all lights in view and update blocks etc
 	 * around them - this method is called every frame - well almost!
 	 */
-	public void updateLights(int sx, int sy, int ex, int ey) {
+	public void updateLights(int sx, int sy, int ex, int ey, boolean torch) {
 	  for (int y = sy; y <= ey; y++) {
 	     for (int x = sx; x < ex+1; x++) {
 	    	if(worldMap[x][y]!=null)
@@ -100,6 +106,13 @@ public class WorldMap {
 		     }
       }
 
+	}
+
+	public void updateTorch(Vector3 position)
+	{
+ 	    	 
+	    updateTileLight(worldMap, (int)position.x, (int)position.y);
+	    	 
 	}
 
 	
@@ -194,8 +207,8 @@ public class WorldMap {
 
 		GRASS_MAX = h;   // Set to height of map
 		
-		this.w = w;
-		this.h = h;
+		WorldMap.w = w;
+		WorldMap.h = h;
 
 		worldMap = new BlankEntity[w][h];
 
@@ -208,7 +221,10 @@ public class WorldMap {
 	 * getBlock get tile from map
 	 */
 	public BlankEntity getBlock(int x, int y) {
-		return worldMap[x][y];
+		if(x<=WorldMap.w && x>=0 && y<=WorldMap.h && y>=0)
+			return worldMap[x][y];
+		else
+			return null;
 	}
 
 	/*
@@ -548,6 +564,12 @@ public class WorldMap {
 			}
 		}
 
+		System.out.println("Creating chunks...");
+		createChunks();	
+		System.out.println("Amount of chunks we can add to:" + chunkList.size() + "\n\n");
+		System.out.println("Inserting random rocks...");
+		insertRandomRocks();
+		
 		System.out.println("All done!");
 		// addTrees(); // This needs updating
 	}
@@ -720,4 +742,86 @@ public class WorldMap {
 			}
 		}
 	}
+	
+	
+	private void insertRandomRocks() {
+		
+		Random r = new Random();
+		for(Chunk c : chunkList) {
+			int rock = r.nextInt(ROCKAMOUNT);
+			for(int y=0; y<Chunk.CHUNKSIZE;y++)
+			{
+				for(int x=0; x<Chunk.CHUNKSIZE;x++)
+				{   
+					drawRockLayer(c.x,c.y,rock);
+					
+				}
+			}
+		}
+	}
+	
+	private void drawRockLayer(int xx, int yy, int rock)
+	{
+		Random r = new Random();
+		int endY = r.nextInt(Chunk.CHUNKSIZE);
+		for(int y=0; y<endY;y++)
+		{
+			int xStart = r.nextInt(Chunk.CHUNKSIZE-2);
+			int xEnd = r.nextInt(Chunk.CHUNKSIZE);
+			if(xEnd < xStart) xEnd+=1;
+			for(int x=xStart; x<xEnd;x++)
+			{
+				switch(rock)  // need to add more rocks here
+				{
+					
+					case 0: worldMap[xx+x][yy+y] = r.nextBoolean() == true ? new RealLavaEntity(xx+x,yy+y) : worldMap[xx+x][yy+y]; break;
+					case 1: worldMap[xx+x][yy+y] = r.nextBoolean() == true ? new RockEntity(xx+x,yy+y) : worldMap[xx+x][yy+y]; break;
+					case 2: worldMap[xx+x][yy+y] = r.nextBoolean() == true ? new RockEntity(xx+x,yy+y) : worldMap[xx+x][yy+y]; break;
+					case 3: worldMap[xx+x][yy+y] = r.nextBoolean() == true ? new CoalEntity(xx+x,yy+y) : worldMap[xx+x][yy+y]; break;
+					case 4: worldMap[xx+x][yy+y] = r.nextBoolean() == true ? new CoalEntity(xx+x,yy+y) : worldMap[xx+x][yy+y]; break;
+					default: worldMap[xx+x][yy+y] = new LandscapeEntity(xx+x,yy+y); break;
+				}		
+			}	
+		}
+	}
+	
+	private void createChunks()
+	{
+		Random r = new Random();
+		for(int sy=0; sy<WorldMap.h;sy+=Chunk.CHUNKSIZE) {
+			for(int sx=0; sx<WorldMap.w;sx+=Chunk.CHUNKSIZE)
+			{
+				if(isChunk(sx,sy))
+				{ 
+					if(r.nextInt(5) > CHANCEOFADDINGCHUNK )   // randomly choose if we create this chunk (saves on memory doing it here)
+						chunkList.add(new Chunk(sx,sy));
+				}
+			}
+		}
+	}
+	
+	private boolean isChunk(int x, int y)
+	{
+		try
+		{
+			for(int yy=0; yy<Chunk.CHUNKSIZE;yy++)
+			{
+				for(int xx=1; xx<Chunk.CHUNKSIZE; xx++)
+				{
+					// We don't want to add any special rocks in water or a cave entity
+					if(worldMap[x+xx][y+yy]==null ||worldMap[x+xx][y+yy] instanceof WaterEntity || worldMap[x+xx][y+yy] instanceof CaveEntity)
+						return false;
+					
+					if(worldMap[x+xx][y+yy].id != worldMap[xx+x-1][yy+y].id)
+					{
+						return false;
+					}
+				}
+			}
+		}
+		catch(Exception e) {
+			return false;
+		}
+		return true;//(Chunk.CHUNKSIZE-1) * Chunk.CHUNKSIZE;
+	}	
 }

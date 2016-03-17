@@ -21,6 +21,8 @@ class EntityFactory {
 
 class BlankEntity {
 
+	protected byte id = 0;
+	
 	protected static int x, y;
 	
 	protected byte lightValue = -1;
@@ -53,7 +55,7 @@ class LandscapeEntity extends BlankEntity {
 		super(x, y);
 		this.lightValue = 2;
 		originalLightValue = 2;
-
+		id = 1;
 	}
 
 	public void draw(Batch batch, TextureRegion[][] t, int x, int y) {
@@ -72,7 +74,7 @@ class LandscapeEntityRight extends BlankEntity {
 		super(x, y);
 		this.lightValue = 2;
 		originalLightValue = 2;
-
+		id = 2;
 	}
 
 	public void draw(Batch batch, TextureRegion[][] t, int x, int y) {
@@ -91,7 +93,7 @@ class LandscapeEntityLeft extends BlankEntity {
 		super(x, y);
 		this.lightValue = 2;
 		originalLightValue = 2;
-
+		id = 3;
 	}
 
 	public void draw(Batch batch, TextureRegion[][] t, int x, int y) {
@@ -111,7 +113,7 @@ class CaveEntity extends BlankEntity {
 		this.lightValue = 2;
 		this.hits = 1;
 		originalLightValue = 2;
-
+		id = 4;
 	}
 
 	public void draw(Batch batch, TextureRegion[][] t, int x, int y) {
@@ -137,6 +139,7 @@ class CaveRightEntity extends CaveEntity {
 
 	public CaveRightEntity(int x, int y) {
 		super(x, y);
+		id = 5;
 	}
 
 	public void draw(Batch batch, TextureRegion[][] t, int x, int y) {
@@ -153,6 +156,7 @@ class CaveLeftEntity extends CaveEntity {
 
 	public CaveLeftEntity(int x, int y) {
 		super(x, y);
+		id = 6;
 	}
 
 	public void draw(Batch batch, TextureRegion[][] t, int x, int y) {
@@ -169,6 +173,7 @@ class CaveTopEntity extends CaveEntity {
 
 	public CaveTopEntity(int x, int y) {
 		super(x, y);
+		id = 7;
 	}
 
 	public void draw(Batch batch, TextureRegion[][] t, int x, int y) {
@@ -185,6 +190,7 @@ class CaveBottomEntity extends CaveEntity {
 
 	public CaveBottomEntity(int x, int y) {
 		super(x, y);
+		id = 8;
 	}
 
 	public void draw(Batch batch, TextureRegion[][] t, int x, int y) {
@@ -204,7 +210,7 @@ class LavaEntity extends BlankEntity {
 		this.lightValue = 2;
 		this.hits = 1;
 		originalLightValue = 2;
-
+		id = 9;
 	}
 
 	public void draw(Batch batch, TextureRegion[][] t, int x, int y) {
@@ -224,7 +230,7 @@ class RealLavaEntity extends LandscapeEntity {
 		this.lightValue = 1;
 		this.hits = 1;
 		originalLightValue = 1;
-
+		id = 10;
 	}
 
 	public void draw(Batch batch, TextureRegion[][] t, int x, int y) {
@@ -253,7 +259,7 @@ class GrassEntity extends BlankEntity {
 		this.lightValue = 15;
 		this.hits = 1;
 		originalLightValue = 15;
-
+		id = 11;
 	}
 
 	public void draw(Batch batch, TextureRegion[][] t, int x, int y) {
@@ -271,6 +277,7 @@ class WeedsEntity extends BlankEntity {
 
 	public WeedsEntity(int x, int y) {
 		super(x, y);
+		id = 12;
 	}
 
 	public void draw(Batch batch, TextureRegion[][] t, int x, int y) {
@@ -288,6 +295,7 @@ class GrassLeftEntity extends GrassEntity {
 
 	public GrassLeftEntity(int x, int y) {
 		super(x, y, GrassType.LEFT);
+		id = 13;
 	}
 
 	public void draw(Batch batch, TextureRegion[][] t, int x, int y) {
@@ -305,6 +313,7 @@ class GrassRightEntity extends GrassEntity {
 
 	public GrassRightEntity(int x, int y) {
 		super(x, y, GrassType.RIGHT);
+		id = 14;
 	}
 
 	public void draw(Batch batch, TextureRegion[][] t, int x, int y) {
@@ -322,6 +331,7 @@ class GrassTopEntity extends GrassEntity {
 
 	public GrassTopEntity(int x, int y) {
 		super(x, y, GrassType.TOP);
+		id = 15;
 	}
 
 	public void draw(Batch batch, TextureRegion[][] t, int x, int y) {
@@ -342,7 +352,7 @@ class CoalEntity extends LandscapeEntity {
 		this.lightValue = 1;
 		this.hits = 5;
 		originalLightValue = 1;
-
+		id = 16;
 	}
 
 	public void draw(Batch batch, TextureRegion[][] t, int x, int y) {
@@ -361,6 +371,7 @@ class RockEntity extends LandscapeEntity {
 	public RockEntity(int x, int y) {
 		super(x, y);
 		this.hits = 3;
+		id = 17;
 	}
 
 	public void draw(Batch batch, TextureRegion[][] t, int x, int y) {
@@ -380,7 +391,7 @@ class WaterEntity extends BlankEntity {
 		super(x, y);
 		this.lightValue = 1;
 		originalLightValue = 1;
-
+		id = 18;
 	}
 
 	public void draw(Batch batch, TextureRegion[][] t, int x, int y) {
@@ -396,7 +407,7 @@ class WaterTopEntity extends WaterEntity {
 
 	public WaterTopEntity(int x, int y) {
 		super(x, y);
-
+		id = 19;
 	}
 
 	public void draw(Batch batch, TextureRegion[][] t, int x, int y) {
@@ -413,6 +424,7 @@ class WaterBottomEntity extends WaterEntity {
 
 	public WaterBottomEntity(int x, int y) {
 		super(x, y);
+		id = 20;
 	}
 
 	public void draw(Batch batch, TextureRegion[][] t, int x, int y) {
@@ -432,7 +444,7 @@ class LightEntity extends BlankEntity {
 		this.lightValue = 15;
 		this.hits = 1;
 		originalLightValue = 15;
-
+		id = 21;
 	}
 
 	public void draw(Batch batch, TextureRegion[][] t, int x, int y) {

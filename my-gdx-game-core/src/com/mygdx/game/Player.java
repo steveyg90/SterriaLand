@@ -11,6 +11,12 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 public class Player {
 
+	private static final float JUMPHEIGHT = 3.0f;
+	
+	private float endY, jumpY;
+	
+	public boolean jumping = false;
+	
 	private float stateTime = 0;
 
 	private Texture playerTextures;
@@ -18,8 +24,8 @@ public class Player {
 	private TextureRegion currentFrame;
 	private TextureRegion[] walkFrames;
 
-	private static final int FRAMEROWS = 768 / 32;
-	private static final int FRAMECOLS = 800 / 16;
+	private static final int FRAMEROWS = 24;//768 / 32;
+	private static final int FRAMECOLS = 50;//800 / 16;
 	private static float TIMER = 1.0f;
 	private static float AMOUNTFRAMES = 1.8f;
 
@@ -33,11 +39,28 @@ public class Player {
 	// Need to load animations and put into hashmap here
 	// anim1 would be of type Animation
 	public static void initialize() {
-		// animations.put("player-left", anim1);
-		// animations.add("player-right", anim2);
-		// animations.add("player-idle", anim3);
 	}
 
+	
+	public void jump() {
+		if(!jumping)
+		{
+			jumping = true;
+			jumpY = y;
+			endY = y - JUMPHEIGHT;
+		}
+		if(jumping)
+		{
+			if(jumpY <= endY)     // reached jump height?
+			{
+				jumping = false;  // yes, set jumping to false, player should now fall down
+			} else
+			{
+				jumpY -= 0.1f;    // keep jumping
+			}
+		}
+	}
+	
 	// Get Animation object with specified key
 	private Animation getAnimation(String animKey) {
 		if (!animations.containsKey(animKey)) {
