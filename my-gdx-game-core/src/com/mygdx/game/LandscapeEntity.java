@@ -59,7 +59,7 @@ class LandscapeEntity extends BlankEntity {
 	}
 
 	public void draw(Batch batch, TextureRegion[][] t, int x, int y) {
-		batch.draw(t[0][0], x << 4, y << 4);
+		batch.draw(t[3][6], x << 4, y << 4);
 	}
 /*
 	@Override
@@ -67,13 +67,74 @@ class LandscapeEntity extends BlankEntity {
 		return "L";
 	}*/
 }
+class LandscapeLeftEntity extends LandscapeEntity {
 
+	public LandscapeLeftEntity(int x, int y) {
+
+		super(x, y);
+		this.lightValue = 4;
+		originalLightValue = 4;
+		id = 1;
+	}
+
+	public void draw(Batch batch, TextureRegion[][] t, int x, int y) {
+		batch.draw(t[3][10], x << 4, y << 4);
+	}
+}
+
+class LandscapeRightEntity extends LandscapeEntity {
+
+	public LandscapeRightEntity(int x, int y) {
+
+		super(x, y);
+		this.lightValue = 5;
+		originalLightValue = 5;
+		id = 1;
+	}
+
+	public void draw(Batch batch, TextureRegion[][] t, int x, int y) {
+		batch.draw(t[3][11], x << 4, y << 4);
+	}
+}
+class LandscapeSingle extends LandscapeEntity {
+
+	public LandscapeSingle(int x, int y) {
+
+		super(x, y);
+		this.lightValue = 6;
+		originalLightValue = 6;
+		id = 1;
+	}
+
+	public void draw(Batch batch, TextureRegion[][] t, int x, int y) {
+		batch.draw(t[3][9], x << 4, y << 4);
+	}
+}
+class LandscapeEntity2 extends LandscapeEntity {
+
+	public LandscapeEntity2(int x, int y) {
+
+		super(x, y);
+		this.lightValue = 2;
+		originalLightValue = 2;
+		id = 1;
+	}
+
+	public void draw(Batch batch, TextureRegion[][] t, int x, int y) {
+		batch.draw(t[3][7], x << 4, y << 4);
+	}
+/*
+	@Override
+	public String toString() {
+		return "L";
+	}*/
+}
 class LandscapeEntityRight extends BlankEntity {
 
 	public LandscapeEntityRight(int x, int y) {
 		super(x, y);
-		this.lightValue = 2;
-		originalLightValue = 2;
+		this.lightValue = 5;
+		originalLightValue = 5;
 		id = 2;
 	}
 
@@ -91,8 +152,8 @@ class LandscapeEntityLeft extends BlankEntity {
 
 	public LandscapeEntityLeft(int x, int y) {
 		super(x, y);
-		this.lightValue = 2;
-		originalLightValue = 2;
+		this.lightValue = 5;
+		originalLightValue = 5;
 		id = 3;
 	}
 

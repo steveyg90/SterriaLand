@@ -11,7 +11,7 @@ public class SoundFx implements Disposable {
 	
 	
 	static final Sound MainTrack = Gdx.audio.newSound(Gdx.files
-	         .internal("../my-gdx-game-core/data/TheHaunting.mp3"));
+	         .internal("../my-gdx-game-core/data/Retribution.mp3"));
 
 	@Override
 	public void dispose() {

@@ -152,9 +152,7 @@ public class Player {
 		// Use this when new animation is implemented
 		//spriteBatch.draw(currentAnim.getKeyFrame(animTime, true),x,50);
 
-		spriteBatch.setColor(0.5f,0.5f,0.5f,0.7f);
 		spriteBatch.draw(currentFrame, !bRight ? x + 16 : x, y, !bRight ? -16 : 16,32);
-	//	spriteBatch.setColor(0.5f,0.5f,0.5f,0.5f);
 		spriteBatch.end();
 	}
 

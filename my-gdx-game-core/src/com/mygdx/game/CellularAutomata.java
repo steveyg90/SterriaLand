@@ -59,8 +59,8 @@ public class CellularAutomata {
 							y); break;
 							
 					default: // dirt
-						newMap[x][y] = nbs <= life ? null : new LandscapeEntity(x,
-								y); break;			
+						newMap[x][y] = nbs <= life ? null : ( r.nextBoolean() == true ? new LandscapeEntity(x,
+								y) : new LandscapeEntity2(x,y)); break;			
 					}
 				else
 				{
@@ -74,7 +74,7 @@ public class CellularAutomata {
 					case 2: // lava
 						newMap[x][y] = nbs > death ? new RealLavaEntity(x, y) : null; break;
 					default: // dirt
-						newMap[x][y] = nbs > death ? new LandscapeEntity(x, y) : null; break;
+						newMap[x][y] = nbs > death ? ( r.nextBoolean() == true ? new LandscapeEntity(x, y) : new LandscapeEntity2(x,y)) : null; break;
 					}		
 				
 				}
